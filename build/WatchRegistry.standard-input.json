@@ -1,0 +1,24 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/WatchRegistry.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n/// @title WatchRegistry — the on-chain record of every Contract Watch watch.\n/// @notice Stores who watches which contract, for which event, and a hash of the rule.\n///         Alert channels (Telegram / Discord) never go on-chain — they live in the Worker only.\n///         No tokens, no payments.\ncontract WatchRegistry {\n    struct Watch {\n        address owner;\n        address target;\n        uint32 chainId;\n        bytes32 eventSig; // topic0 of the event; bytes32(0) = any event; FAILED_CALLS = failed calls\n        bytes32 ruleHash; // keccak256 of the canonical rule JSON\n        string label;\n        bool active;\n        uint64 at;\n    }\n\n    /// @notice eventSig used for \"failed calls to this contract\" watches.\n    bytes32 public constant FAILED_CALLS = keccak256(\"ContractWatch:FailedCalls\");\n    uint256 public constant MAX_LABEL = 40;\n\n    Watch[] public watches;\n    mapping(address => uint256[]) internal watchesOfTarget;\n    mapping(address => uint256[]) internal watchesBy;\n\n    event Registered(uint256 indexed id, address indexed owner, address indexed target);\n    event RuleUpdated(uint256 indexed id);\n    event ActiveChanged(uint256 indexed id, bool active);\n\n    error EmptyTarget();\n    error BadLabel();\n    error NotOwner();\n    error NoWatch();\n\n    function register(address target, uint32 chainId, bytes32 eventSig, bytes32 ruleHash, string calldata label)\n        external\n        returns (uint256 id)\n    {\n        if (target == address(0)) revert EmptyTarget();\n        uint256 len = bytes(label).length;\n        if (len == 0 || len > MAX_LABEL) revert BadLabel();\n        id = watches.length;\n        watches.push(Watch(msg.sender, target, chainId, eventSig, ruleHash, label, true, uint64(block.timestamp)));\n        watchesOfTarget[target].push(id);\n        watchesBy[msg.sender].push(id);\n        emit Registered(id, msg.sender, target);\n    }\n\n    function updateRule(uint256 id, bytes32 ruleHash) external {\n        _own(id).ruleHash = ruleHash;\n        emit RuleUpdated(id);\n    }\n\n    function setActive(uint256 id, bool active) external {\n        _own(id).active = active;\n        emit ActiveChanged(id, active);\n    }\n\n    function getWatch(uint256 id) external view returns (Watch memory) {\n        if (id >= watches.length) revert NoWatch();\n        return watches[id];\n    }\n\n    function watchesFor(address target) external view returns (uint256[] memory) {\n        return watchesOfTarget[target];\n    }\n\n    function watchesOf(address owner) external view returns (uint256[] memory) {\n        return watchesBy[owner];\n    }\n\n    function total() external view returns (uint256) {\n        return watches.length;\n    }\n\n    /// @notice Page through watches (used by the Worker and the trust strip). Returns up to `count` from `from`.\n    function getWatches(uint256 from, uint256 count) external view returns (Watch[] memory out) {\n        uint256 n = watches.length;\n        if (from >= n) return new Watch[](0);\n        uint256 end = from + count > n ? n : from + count;\n        out = new Watch[](end - from);\n        for (uint256 i = from; i < end; i++) out[i - from] = watches[i];\n    }\n\n    function _own(uint256 id) internal view returns (Watch storage w) {\n        if (id >= watches.length) revert NoWatch();\n        w = watches[id];\n        if (w.owner != msg.sender) revert NotOwner();\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode.object",
+          "evm.deployedBytecode.object"
+        ]
+      }
+    }
+  }
+}

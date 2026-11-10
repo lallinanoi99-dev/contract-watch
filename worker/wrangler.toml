@@ -1,0 +1,29 @@
+name = "contractwatch-worker"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Every minute: scan new blocks for every saved watch and send alerts.
+[triggers]
+crons = ["* * * * *"]
+
+[vars]
+# Comma-separated sites allowed to call this Worker (localhost is always allowed for dev)
+ALLOWED_ORIGINS = "https://contractwatch.app"
+# WatchRegistry addresses (same as assets/config.js)
+REGISTRY_MAINNET = "0x505fc62244B7E490c463B0390492F19C97d51910"
+REGISTRY_TESTNET = ""
+
+# Create with: npx wrangler kv namespace create CW — then paste the id below.
+[[kv_namespaces]]
+binding = "CW"
+id = "PASTE_KV_ID"
+
+# Secrets (never commit):
+#   npx wrangler secret put ANTHROPIC_API_KEY
+#   npx wrangler secret put TELEGRAM_BOT_TOKEN
+#   npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
+
+# No request logging — webhook URLs and chat ids never reach logs.
+[observability]
+enabled = false

@@ -1,0 +1,17 @@
+{
+  "name": "contractwatch-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node test-worker.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "ethers": "^6.13.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "contractwatch", "runtimeExecutable": "node", "runtimeArgs": ["tools/serve.mjs", "4625"], "port": 4625 }
+  ]
+}

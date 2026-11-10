@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contract Watch</title>
+<script>
+  // GitHub Pages serves this for /app, /app/new, /w/0x… — send the path to index.html as ?r=
+  // (index.html restores it). On a github.io project page the first segment is the repo name.
+  (function () {
+    var l = location;
+    var seg = l.hostname.endsWith('github.io') ? l.pathname.split('/')[1] : '';
+    var base = seg ? '/' + seg + '/' : '/';
+    var rest = l.pathname.slice(base.length);
+    var q = l.search ? '&' + l.search.slice(1) : '';
+    l.replace(base + '?r=' + encodeURIComponent(rest) + q + l.hash);
+  })();
+</script>
+</head>
+<body></body>
+</html>

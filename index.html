@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  // Base path: "/" on a custom domain, "/<repo>/" on a github.io project page. Restores routes sent here by 404.html (?r=).
+  (function () {
+    var l = location;
+    var seg = l.hostname.endsWith('github.io') ? l.pathname.split('/')[1] : '';
+    window.CW_BASE = seg ? '/' + seg + '/' : '/';
+    document.write('<base href="' + window.CW_BASE + '">');
+    var p = new URLSearchParams(l.search);
+    if (p.has('r')) {
+      var r = p.get('r'); p.delete('r');
+      var q = p.toString();
+      history.replaceState(null, '', window.CW_BASE + r + (q ? '?' + q : '') + l.hash);
+    }
+  })();
+</script>
+<title>Contract Watch — know the moment it happens</title>
+<meta name="description" content="Pick any BOT Chain contract, say what to watch, and get a Telegram or Discord ping — with a live dashboard and an on-chain record of every watch.">
+<meta property="og:title" content="Contract Watch — know the moment it happens">
+<meta property="og:description" content="Watch any BOT Chain contract and get a Telegram or Discord ping the moment something happens.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#FBF8F1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/MotionPathPlugin.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/DrawSVGPlugin.min.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#view">Skip to content</a>
+<div class="preview-bar" id="previewBar" hidden></div>
+<header class="nav" id="nav">
+  <a class="brand" href="./" data-link aria-label="Contract Watch home"><span class="brand-mark" id="brandMark"></span><span>Contract Watch</span></a>
+  <nav class="nav-pill" aria-label="Main">
+    <a href="./#templates" data-link data-nav="templates">Templates</a>
+    <a href="./#how" data-link data-nav="how">How it works</a>
+    <a href="./#faq" data-link data-nav="faq">FAQ</a>
+    <a href="app" data-link data-nav="app" class="nav-app">Dashboard</a>
+  </nav>
+  <div class="nav-right">
+    <button class="btn btn-ghost btn-sm" id="walletBtn" type="button">Connect wallet</button>
+    <a class="btn btn-primary btn-sm" href="app/new" data-link>Start watching</a>
+    <button class="nav-menu" id="navMenu" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"></button>
+  </div>
+</header>
+<main id="view" tabindex="-1"></main>
+<footer class="footer" id="footer"></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="assets/main.js"></script>
+</body>
+</html>
